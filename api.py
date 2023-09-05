@@ -4,7 +4,7 @@ import shutil
 import urllib.request
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from litellm import completion
+
 import fitz
 import numpy as np
 import openai
@@ -109,19 +109,17 @@ def load_recommender(path, start_page=1):
 
 
 def generate_text(openAI_key, prompt, engine="text-davinci-003"):
-    # openai.api_key = openAI_key
+    openai.api_key = openAI_key
     try:
-        messages=[{ "content": prompt,"role": "user"}]
-        completions = completion(
-            model=engine,
-            messages=messages,
+        completions = openai.Completion.create(
+            engine=engine,
+            prompt=prompt,
             max_tokens=512,
             n=1,
             stop=None,
             temperature=0.7,
-            api_key=openAI_key
         )
-        message = completions['choices'][0]['message']['content']
+        message = completions.choices[0].text
     except Exception as e:
         message = f'API Error: {str(e)}'
     return message 
